@@ -1,0 +1,55 @@
+class Animation_cube_of_cubes(object):
+    def __init__(self):
+        self.off_max = 300
+        
+    def color_from_offset(self, offset):
+        self.offset = offset
+        int(self.offset)
+        return int((self.offset + self.off_max) / (2.8 + self.off_max) * 255)
+    
+    def update(self):
+        self.xo = -self.off_max
+        
+        translate(width/2, height/2, -self.off_max)
+        rotateX(frameCount * .01)
+        rotateY(frameCount * .01)
+        rotateZ(frameCount * .01)
+        
+        while self.xo <= self.off_max:
+            self.yo = -self.off_max
+            while self.yo <= self.off_max:
+                self.zo = -self.off_max
+                while self.zo <= self.off_max:
+                    
+                    pushMatrix()
+                    translate(self.xo, self.yo, self.zo)
+                    rotateX(frameCount * .02)
+                    rotateY(frameCount * .02)
+                    rotateZ(frameCount * .02)
+                    
+                    fill(
+                        Animation_cube_of_cubes.color_from_offset(self, self.xo),
+                        Animation_cube_of_cubes.color_from_offset(self, self.yo),
+                        Animation_cube_of_cubes.color_from_offset(self, self.zo)
+                        )
+                    box(float(20 + (sin(frameCount / 15.0)) * 18))
+                    popMatrix()
+                
+                    self.zo += 50
+                
+                self.yo += 50
+            
+            self.xo += 50
+            
+            
+def setup():
+    size(980, 960, P3D)
+    
+def draw():
+    background(0)
+    
+    anim_kwadrat = Animation_cube_of_cubes()
+    anim_kwadrat.update()
+    
+    
+                     
