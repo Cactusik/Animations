@@ -1,0 +1,239 @@
+
+########################################## animacja wykorzystująca wzór na superformułę 
+class Animacja_superformula(object): # super formuła = super elipsa, wzór do opisania kształtów i krzywych
+
+    def __init__(self, t, x, y): # x i y = width/2, height/2 żeby wyśrodkować animację, w przeciwnym razie pojawi się w lewym górnym rogu ekranu
+        self.t = t # nadaje ruch
+        self.x = x
+        self.y = y
+        self.theta = 0 # kąt
+        self.a = 6
+        self.b = 3
+        self.m = 10
+        self.n1 = 1
+        self.n2 = sin(self.t) * 0.5 + 0.5
+        self.n3 = cos(self.t) * 0.5 + 0.2
+        
+    def r(self):  ##### wzór na superformułę, r = radius = promień 
+        return pow(pow(abs(cos(self.m * self.theta / 4.0) / self.a), self.n2) + pow(abs(sin(self.m * self.theta / 4.0) / self.b), self.n3), -1.0/ self.n1)
+        
+        
+    def show(self):
+        noFill()
+        stroke(255)
+        strokeWeight(2)
+        
+        pushMatrix()
+        
+        translate(self.x, self.y) # translacja w prawo/lewo, góra/dół (czyli przesunięcie) # wywołane w draw jest resetowane od nowa # kontrolowane przez push i pop Matrix
+        
+        beginShape()  ##### zaczyna kształt # tworzenie animacji
+        
+        while self.theta <= (2 * PI): # dopóki kąt theta jest mniejszy bądź równy 2PI
+            self.theta += 0.01 # zwiększ kąt o 0.01
+            Animacja_superformula.r(self) # wykonaj wzór na superformułę 
+            self.x = Animacja_superformula.r(self) * cos(self.theta) * 50 # nowy x = wzór na formułę razy cos kąta theta * 50 
+            self.y = Animacja_superformula.r(self) * sin(self.theta) * 50 # zmienia się kąt, animacja się porusza
+            vertex(self.x, self.y) # rysuje/zwraca kształt 
+        
+        endShape() 
+        
+        popMatrix()
+        
+ ################################# animacja z poruszającymi się liniami (a'ka Media Player)       
+class Animacja_linia(object):
+    def __init__(self, t, x, y):
+        self.x = x
+        self.y = y
+        self.t = t # nadaje ruch
+        self.ilosc_linii = 10
+        self.i = 0 # licznik dla animacji 1
+        self.j = 0 # licznik dla animacji 2
+        
+########### animacja 1
+    def x1(self, w): ##### funkcje matematyczne nadające kształt liniom do animacji
+        self.w = w # w = wartość pobrana do funkcji 
+        return sin(self.w / 10) * 100 + sin(self.w / 5) * 100
+    
+    def y1(self, w):
+        self.w = w
+        return cos(self.w / 10) * 100 + sin(self.w / 5) * 20
+    
+    def x2(self, w):
+        self.w = w
+        return sin(self.w / 10) * 200 + sin(self.w / 12) * 2 
+
+    def y2(self, w):
+        self.w = w
+        return cos(self.w / 20) * 200 + cos(self.w / 12) * 20 
+
+########## animacja 2 - przeciwna do animacji 1
+    def x3(self, w):
+        self.w = w
+        return -sin(self.w / 10) * 100 - sin(self.w / 5) * 100
+    
+    def y3(self, w):
+        self.w = w
+        return -cos(self.w / 10) * 100 - sin(self.w / 5) * 20 
+
+    def x4(self, w):
+        self.w = w
+        return -sin(self.w / 10) * 200 - sin(self.w / 12) * 2
+
+    def y4(self, w):
+        self.w = w
+        return -cos(self.w / 20) * 200 - cos(self.w / 12) * 20 
+    
+
+    def show(self): ### pokazywanie animacji na ekranie 
+        strokeWeight(5)
+        
+        pushMatrix()
+        
+        translate(self.x, self.y) # przesunięcie na środek ekranu
+        
+        while self.i < self.ilosc_linii: # dopóki licznik i jest mniejszy od ilości lini
+            self.i += 1 # zwiększ licznik o 1
+            stroke(255, 150, 190) # kolor linii
+            line(Animacja_linia.x1(self, self.t + self.i), Animacja_linia.y1(self, self.t + self.i), Animacja_linia.x2(self, self.t + self.i), Animacja_linia.y2(self, self.t + self.i))
+            # linia(x1, y1, x2, y2) - w miejsce x1,y1... podstawiane są wzory matematyczne
+            
+        while self.j < self.ilosc_linii: # to samo co wyżej
+            self.j += 1
+            stroke(150, 190, 255)
+            line(Animacja_linia.x3(self, self.t + self.j), Animacja_linia.y3(self, self.t + self.j), Animacja_linia.x4(self, self.t + self.j), Animacja_linia.y4(self, self.t + self.j))
+        
+        popMatrix()
+        
+        
+######################### animacja z kwadratami
+class Animacja_kwadraty(object):
+    def __init__(self, kat):
+        self.rozm_plytki = 50 # rozmiar płytki
+        self.pol_plytki = 25 # połowa płytki
+        self.kat = kat # kąt (zmienia się co nadaje ruch)
+        
+        
+    def show(self):
+        rectMode(CENTER) #wyśrodkowanie
+        frameRate(14) #ilość klatek na sekundę 
+        colorMode(HSB) # dzięki temu jest wiele kolorów naraz w animacji 
+        noStroke()
+        
+        self.rzad = width / self.rozm_plytki # rząd z płytkami
+        self.kolumna = height / self.rozm_plytki # kolumna z płytkami
+
+        # tworzenie tablicy dwuwymiarowej z płytkami
+        for r in range(self.rzad): # dla r w rzędzie 
+            for k in range(self.kolumna): # dla k w kolumnach
+                with pushMatrix():
+            
+                    # przesuń względem: połowa płytki + licznik k * rozmiar płytki - dzieki temu widać wszystkie płytki na ekranie
+                    # bez dodatania połowy płytki do całej kolumny będzie widoczny margines u dołu ekranu oraz z prawej strony właśnie o wielkości połowy płytki
+                    translate( 
+                              self.pol_plytki + k * self.rozm_plytki, 
+                              self.pol_plytki + r * self.rozm_plytki)
+                
+                    if int(random(2)): # losuje 1 z 2 możliwości rotacji 
+                        rotate(self.kat / 3) 
+                        
+                    else:
+                        rotate(self.kat / 2)
+                    
+                    fill(((self.kat * r + 1) + (self.kat * k + 1)) % 255, 255, 255, 150) # wypełnia płytki kolorami
+                    # pierwszy składnik nadaje kolory w rzędach i kolumnach, drugi i trzeci określają "jasność" tych kolorów, a czwarty to przezroczystość
+                    rect(0, 0, 100 * sin(self.kat / 5), 100 * cos(self.kat / 5))
+                    #rysuje obracającą się płytkę
+                    
+                    
+########################### animacja z trójkątami (interaktywna)
+class Animacja_trojkaty(object):
+    def __init__(self, t):
+        self.t = t
+        #self.ilosc_trojkatow = 90
+        
+    def trojkat(self, length):
+        triangle(
+                 0,
+                 -length,
+                 -length * sqrt(3) / 2,
+                 length / 2,
+                 length * sqrt(3) / 2,
+                 length / 2
+                 )
+        # trójkąt składa się z trzech punktów
+        # pierwszy punkt to (0, -długość)
+        # drugi punkt to ((-długość * pierwiastek(3)/2), długość / 2))
+        # trzeci punkt to ((długość * pierwiastek(3)/2), długość / 2))
+        
+    def show(self):
+        noFill()
+        strokeWeight(3)
+        colorMode(HSB)
+        
+        translate(width/2, height/2)
+        self.ilosc_trojkatow = map(mouseX, 0, width, 3, 120)
+        # map samo w sobie ponownie odwzorowuje liczbę z jednego zakresu na inny (stąd widać "przemieszczenie" trójątów)
+        # pierwszy składnik map - przychodząca wartość do konwersji - wartość x na wskazana przez myszkę
+        # drugi składnik - dolna granica tego zakresu wartości - 0
+        # trzeci składnik - górna granica tego zakresu wartości - szerokość
+        # czwarty składnik - dolna granica docelowego zakresu wartości - 3 (i taka najmnnijesza ilość trójkątów pojawi się na ekranie)
+        # piąty składnik - górna granica docelowego zakresu wartości - 120 (największa ilość trójkatów na ekranie)
+        
+        for i in range(int(self.ilosc_trojkatow)): # dla licznik i w ilości trójkątów
+            rotate(radians(360 / self.ilosc_trojkatow)) # obracaj o kąt (360 stopni / ilość trójkątów) 
+            # dzięki temu każdy trójkąty są obrócone tworząc wierzchołkami koło, ale się nie poruszają
+            # bez tego trójkąty pojawią się tylko w jednym miejscu
+            pushMatrix()
+            translate(200, 0)
+            self.offset = map(mouseY, 0, height, 1, 10) # do zmiennej offset przypisz map od mouseY, 0, wysokość, 1, 10
+            # dzięki temu widać jak zmienia się wygląd środka animacji w zalezności od pozycji myszki względem osi Y
+            rotate(radians(self.t + self.offset * i * 360 / self.ilosc_trojkatow))
+            # obracaj o kąt (pobrana zmienna t + wartość z offset * licznik * 360 / ilość trójkątów)
+            # nadaje ruch całej animacji
+            stroke(3 * i, 255, 255) # nadaje kolor trójkątom
+            #pierwszy składnik odpowiada za rozmieszczenie kolorów, tworzy swego rodzaju balans ich rozmieszczenia
+            # pozostałe dwa nadają jasność; zmniejszenie tych wartości przyciemni kolory
+            Animacja_trojkaty.trojkat(self, 100) # tworzy trójkąt; długość = 100
+            popMatrix()
+            
+###################################################################################            
+        
+global t, kat # jeśli t i k będą w setupie będą mieć cały czas wartość 0, dzięki temu, że poza funkcją, można zmieniać ich wartość
+t = 0
+kat = 0
+        
+def setup():
+    size(600, 600)
+    
+
+def draw():
+    global t, kat
+    background(0)
+    
+    if keyCode == UP: # po naciśnięciu strzałki w górę pojawia się animacja z superformułą
+        anim_super = Animacja_superformula(t, width/2, height/2)
+        anim_super.show()
+        t += 0.1
+        
+    if keyCode == DOWN: # po naciśnięciu strzałki w dół pojawia się animacja z liniami
+        anim_linie = Animacja_linia(t, width/2, height/2)
+        anim_linie.show()
+        t += 0.5
+        
+    if keyCode == LEFT: # po naciśnięciu strzałki w lewo pojawia się animacja z kwadratami
+        anim_kwadraty = Animacja_kwadraty(kat)
+        anim_kwadraty.show()
+        kat += 0.1
+        
+    if keyCode == RIGHT: # po naciśnięciu strzłki w prawo pojawia się animacja z trójkatami
+        anim_trojkaty = Animacja_trojkaty(t)
+        anim_trojkaty.show()
+        t += 0.5
+
+    
+    
+    
+    
+        
+        
