@@ -1,0 +1,61 @@
+def colors(offset):
+    global kwadraty
+    return int((offset + kwadraty) / (2.8 + kwadraty) * 200)
+
+
+global kwadraty, t, linie, i
+linie = 10
+kwadraty = 200
+t = 0
+i = 0
+
+
+def setup():
+    size(960, 980, P3D)
+    
+    
+def draw():
+    global kwadraty, t, linie, i
+    
+    background(0)
+    translate(width/2, height/2, - 50)
+    
+    rotateX(frameCount * 0.005)
+    rotateY(frameCount * 0.005)
+    rotateZ(frameCount * 0.005)
+    
+    x = -kwadraty
+    
+    while x <= kwadraty:
+        y = -kwadraty
+        while y <= kwadraty:
+            z = - kwadraty
+            while z <= kwadraty:
+                pushMatrix()
+                
+                translate(x + 80, y + 80, z + 80)
+                
+                rotateX(frameCount * 0.02)
+                rotateY(frameCount * 0.02)
+                rotateZ(frameCount * 0.02)
+                
+                fill(colors(x), colors(y), colors(z))
+                
+                box(20)
+                
+                popMatrix()
+                
+                z += 70
+                rotateZ((frameCount * 0.0001) + 10)
+                
+            y += 70
+            rotateY((frameCount * 0.0001) + 10)
+            
+        x += 70
+        rotateX((frameCount * 0.0001) + 10)
+            
+    fill(179, 0, 255, 100)
+    sphere(420)
+    
+    t += 0.5
+    
