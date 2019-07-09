@@ -1,61 +1,84 @@
-def colors(offset):
-    global kwadraty
-    return int((offset + kwadraty) / (2.8 + kwadraty) * 200)
-
-
-global kwadraty, t, linie, i
-linie = 10
-kwadraty = 200
-t = 0
-i = 0
-
-
-def setup():
-    size(960, 980, P3D)
+class Klocki(object):
+    def __init__(self):
+        self.kwadraty = 200 # przedział który posłuży do tworzenia figury w trójwymiarze
+        
+    def kolorki(self, offset): # gotowy wzór zwracający kolory do naszej figury
+        self.offset = offset # zmienna offset
+        int(self.offset) # pobraną zmiennę trzeba przekonwetować na zmienną typu int, inaczej pojawi się błąd
+        return int((self.offset + self.kwadraty) / (2.8 + self.kwadraty) * 200) # wykonanie gotowego wzoru
     
+    def show(self):
+        
+        self.x = -self.kwadraty # x = - nasz przedział, czyli -200
+        
+        translate(width/2, height/2, -self.kwadraty) # przesunięcie na środek oraz cofnięcie do tyłu o 300 jednostek
+        
+        rotateX(frameCount * 0.005)  #obracanie całej figury w okół osi X
+        rotateY(frameCount * 0.005)  #obracanie całej figury w okół osi Y
+        rotateZ(frameCount * 0.005)  #obracanie całej figury w okół osi Z 
+        
+        
+        #tworzenie tablicy trójwymiarowej do stworzenia figury przestrzennej
+        while self.x <= self.kwadraty: #dopóki x jest mniejsze bądź równe 200
+            self.y = -self.kwadraty # y = -200
+            while self.y <= self.kwadraty: #dopóki y jest mniejsze badź równe 200
+                self.z = -self.kwadraty # z = - 200
+                while self.z <= self.kwadraty: #dopóki z jest mniejsze bądź równe 200
+                    
+                    pushMatrix()
+                    
+                    translate(self.x + 80, self.y+ 80, self.z+ 80) #przesuń do punktu x, y, z
+                    rotateX(frameCount * 0.02) #obracaj box względem osi X
+                    rotateY(frameCount * 0.02) #obracaj box względem osi Y
+                    rotateZ(frameCount * 0.02) #obracaj box względem osi Z
+                    
+                    fill(
+                        Klocki.kolorki(self, self.x),
+                        Klocki.kolorki(self, self.y),
+                        Klocki.kolorki(self, self.z)
+                        )
+                    # fill( x, y, z) - wypełnia figurę kolorami z metody 
+                    
+                    box(20) # tworzenie trójwymiarowego boxa
+                    popMatrix()
+                
+                    self.z += 70 # powiększ z o 50 - stwórz boxy po osi Z
+                    rotateZ((frameCount * 0.0001) + 10)
+                
+                self.y += 70 # powiększ y o 50 - stwórz boxy po osi Y
+                rotateY((frameCount * 0.0001) + 10)
+            
+            self.x += 70 # powieksz z o 50 - stwórz boxy po osi X
+            rotateX((frameCount * 0.0001) + 10)
+            # w ten sposób tworzy się trójwymiarowa figura, ale, że po wykonaniu każdej pętli 
+            #jest jeszcze dodana rotacja, mamy efekt rozpadu i takiego misz maszu na ekranie
+            
+
+class Sphere(object): # klasa sfery
+    def __init__(self):
+        self.r = 420 # promień = 420
+        
+    def show(self):
+        rectMode(CENTER) # wyśrodkowanie na ekranie
+        rotateX(frameCount * 0.002) # rotacja po osiach X, Y, Z 
+        rotateY(frameCount * 0.004)
+        rotateZ(frameCount * 0.005)
+        fill(179, 0, 255, 100) # wypełnienie kolorem sfery
+        sphere(self.r) # rysowanie sfery
+            
+    
+        
+             
+def setup():
+    size(980, 960, P3D)
     
 def draw():
-    global kwadraty, t, linie, i
-    
     background(0)
-    translate(width/2, height/2, - 50)
     
-    rotateX(frameCount * 0.005)
-    rotateY(frameCount * 0.005)
-    rotateZ(frameCount * 0.005)
+    anim_klocki = Klocki()
+    anim_klocki.show()
     
-    x = -kwadraty
-    
-    while x <= kwadraty:
-        y = -kwadraty
-        while y <= kwadraty:
-            z = - kwadraty
-            while z <= kwadraty:
-                pushMatrix()
-                
-                translate(x + 80, y + 80, z + 80)
-                
-                rotateX(frameCount * 0.02)
-                rotateY(frameCount * 0.02)
-                rotateZ(frameCount * 0.02)
-                
-                fill(colors(x), colors(y), colors(z))
-                
-                box(20)
-                
-                popMatrix()
-                
-                z += 70
-                rotateZ((frameCount * 0.0001) + 10)
-                
-            y += 70
-            rotateY((frameCount * 0.0001) + 10)
-            
-        x += 70
-        rotateX((frameCount * 0.0001) + 10)
-            
-    fill(179, 0, 255, 100)
-    sphere(420)
-    
-    t += 0.5
-    
+    kulka = Sphere()
+    kulka.show()
+
+     
